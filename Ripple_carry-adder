@@ -1,0 +1,38 @@
+module Ripple_carry_adder(a,b,cin,sum,cout);
+input [3:0]a,b;
+input cin;
+output [3:0]sum;
+output cout;
+wire w1,w2,w3;
+fulladder u1(.A(a[0]),.B(b[0]),.Cin(cin),.Sum(sum[0]),.Cout(w1));
+fulladder u2(.A(a[1]),.B(b[1]),.Cin(w1),.Sum(sum[1]),.Cout(w2));
+fulladder u3(.A(a[2]),.B(b[2]),.Cin(w2),.Sum(sum[2]),.Cout(w3));
+fulladder u4(.A(a[3]),.B(b[3]),.Cin(w3),.Sum(sum[3]),.Cout(cout));
+endmodule 
+
+module fulladder(A,B,Cin,Sum,Cout);
+input A,B,Cin;
+output Cout,Sum;
+assign Sum=A^B^Cin;
+assign Cout=(A&B)|(B&Cin)|(A&Cin);
+endmodule 
+
+module Ripple_carry_adder_tb();
+reg [3:0]a,b;
+reg cin;
+wire [3:0]sum;
+wire cout;
+Ripple_carry_adder u5(a,b,cin,sum,cout);
+initial 
+begin 
+#0 a=4'b0000; b=4'b0101; cin=1'b0;
+#10 a=4'b0101; b=4'b1000; cin=1'b0;
+#10 a=4'b0001; b=4'b1100; cin=1'b0;
+#10 a=4'b1110; b=4'b0010; cin=1'b0;
+end
+initial 
+$monitor($time,"a=%b, b=%b, cin=%b, sum=%b, cout=%b",a,b,cin,sum, cout);
+initial 
+#50 $finish;
+endmodule 
+ 
