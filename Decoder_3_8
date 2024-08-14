@@ -1,0 +1,65 @@
+module decoder(i, en, y);
+  input [2:0] i;
+  input en;
+  output reg [7:0] y;  // Declaring output as reg since it's assigned in always block
+
+  // Correcting the always block syntax
+  always @(i or en) begin
+    if (!en)
+      y = 8'bz;  // High impedance state when enable is low
+    else begin
+      case (i)
+        3'b000: y = 8'b00000001;
+        3'b001: y = 8'b00000010;
+        3'b010: y = 8'b00000100;
+        3'b011: y = 8'b00001000;
+        3'b100: y = 8'b00010000;
+        3'b101: y = 8'b00100000;
+        3'b110: y = 8'b01000000;
+        3'b111: y = 8'b10000000;
+        default: y = 8'b00000000;  // Default case to cover all possibilities
+      endcase
+    end
+  end
+endmodule
+
+module decoder_tb();
+  reg [2:0] i;
+  reg en;
+  wire [7:0] y;
+
+  // Instantiate the decoder module
+  decoder u1 (i, en, y);
+
+  initial begin
+    en = 1'b0;  // Initialize enable to 0
+    i = 3'b000; // Initialize input i
+
+    // Test cases with enable = 0 (expect high impedance 'z')
+    #10 i = 3'b001;
+    #10 i = 3'b010;
+    #10 i = 3'b011;
+    #10 i = 3'b100;
+    #10 i = 3'b101;
+    #10 i = 3'b110;
+    #10 i = 3'b111;
+
+    // Test cases with enable = 1 (expect corresponding outputs)
+    #10 en = 1'b1;
+    #10 i = 3'b000;
+    #10 i = 3'b001;
+    #10 i = 3'b010;
+    #10 i = 3'b011;
+    #10 i = 3'b100;
+    #10 i = 3'b101;
+    #10 i = 3'b110;
+    #10 i = 3'b111;
+
+    #10 $finish;  // End the simulation
+  end
+
+  // Monitor output during the simulation
+  initial begin
+    $monitor($time, " i=%b, en=%b, y=%b", i, en, y);
+  end
+endmodule
